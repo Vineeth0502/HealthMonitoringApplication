@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background-color: #f4f8fb;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: linear-gradient(90deg, #43cea2, #185a9d);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        .nav-links li {
+            margin-left: 20px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover {
+            color: #ffdd00;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 32px;
+            color: #185a9d;
+        }
+        form {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #43cea2;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #185a9d;
+        }
+        .message {
+            margin-top: 15px;
+            font-size: 16px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .message-error {
+            color: #fff;
+            background-color: #ff4d4d;
+        }
+        .message-success {
+            color: #fff;
+            background-color: #4caf50;
+        }
+        footer {
+            background: linear-gradient(90deg, #43cea2, #185a9d);
+            color: white;
+            text-align: center;
+            padding: 12px 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="dashboard-title">Health Monitoring Dashboard</div>
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
+    </ul>
+</header>
+
+<main>
+    <h1>Login Page</h1>
+    <form action="/login" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Login</button>
+    </form>
+    <p class="message message-error" th:if="${param.error}">
+        Invalid username or password.
+    </p>
+    <p class="message message-success" th:if="${param.logout}">
+        You have been logged out successfully.
+    </p>
+</main>
+
+<footer>
+    &copy; 2024 Health Monitoring Dashboard. All Rights Reserved.
+</footer>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Health Records Dashboard</title>
+    <link rel="stylesheet" href="/templates/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #43cea2;
+            --secondary-color: #185a9d;
+            --accent-color: #ffdd00;
+            --text-color: #333;
+            --text-light: #666;
+            --background-color: #f4f8fb;
+            --card-background: #fff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+
+        .dashboard-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            margin-bottom: 2.5rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            line-height: 1.2;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero-content p {
+            font-size: 1rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.25rem;
+        }
+
+        .button {
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: var(--primary-color);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .button.get-app {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 0.9375rem;
+            padding: 1.25rem;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 0.9375rem;
+        }
+
+        .tab {
+            padding: 0.625rem 0.9375rem;
+            background-color: #e9f7ef;
+            border-radius: 0.625rem;
+            margin-right: 0.625rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .tab:hover {
+            background-color: #d1ff7b;
+        }
+
+        .tab.active {
+            background-color: #a5d6a7;
+            color: white;
+        }
+
+        .big-number {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 0.3125rem;
+        }
+
+        .label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-top: 0.3125rem;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.9375rem;
+        }
+
+        .progress-day {
+            width: 1.875rem;
+            height: 6.25rem;
+            background-color: #e3f2fd;
+            position: relative;
+            border-radius: 0.3125rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .circle-progress {
+            width: 6.25rem;
+            height: 6.25rem;
+            background: conic-gradient(var(--primary-color) 75%, #e0e0e0 0);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-interface {
+            margin-top: 1.25rem;
+            padding: 0.625rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            height: 12.5rem;
+            overflow-y: scroll;
+        }
+
+        .chat-message {
+            margin: 0.3125rem;
+            padding: 0.625rem;
+            background-color: #e9f7ef;
+            border-radius: 0.625rem;
+        }
+
+        .send-message {
+            display: flex;
+            margin-top: 0.625rem;
+        }
+
+        .send-message input {
+            flex: 1;
+            padding: 0.625rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            margin-right: 0.625rem;
+        }
+
+        .send-message button {
+            padding: 0.625rem 1.25rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        .send-message button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .chart-container {
+            width: 100%;
+            margin-top: 1.25rem;
+        }
+
+        .responsive-chart {
+            width: 100%;
+            height: auto;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            padding: 1.25rem 0;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card, .hero, footer {
+            animation: fadeIn 0.8s ease;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* New styles for enhanced components */
+        .heart-rate-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .heart-rate-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 15px solid #ff4d4d;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 77, 77, 0.1);
+        }
+
+        .heart-rate-warning {
+            color: #ff4d4d;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .medication-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: white;
+            transition: transform 0.2s;
+        }
+
+        .medication-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .medication-icon {
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .medication-info {
+            flex: 1;
+        }
+
+        .medication-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .medication-dosage {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .medication-time {
+            background: #e3f2fd;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            color: var(--secondary-color);
+        }
+
+        .bmi-card {
+            padding: 1.5rem;
+        }
+
+        .bmi-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .bmi-icon {
+            color: var(--primary-color);
+        }
+
+        .bmi-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: #e8f5e9;
+            border-radius: 8px;
+            color: #2e7d32;
+            margin-top: 1rem;
+        }
+
+        .appointment-item {
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: white;
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .appointment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+        }
+
+        .status-confirmed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="dashboard-title">Health Records Dashboard</div>
+    <nav class="nav-links">
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+    </nav>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Transforming Healthcare with Futuristic AI</h1>
+            <p>Revolutionizing healthcare with advanced AI and blockchain technology, improving patient care and outcomes through collaboration.</p>
+            <div class="hero-buttons">
+                <button class="button">For Patients</button>
+                <button class="button">For Doctors</button>
+                <button class="button get-app">Get the App</button>
+            </div>
+        </div>
+        <div>
+            <img src="https://cdn.dribbble.com/userupload/16945145/file/original-fad18c9d8a1eb5fd53e350872f4fdf24.jpg?resize=1200x900&vertical=center" alt="Healthcare Hero" style="border-radius: 15px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); width: 100%; max-width: 500px;">
+        </div>
+    </section>
+
+    <div class="grid">
+        <div class="card">
+            <div class="tabs">
+                <div class="tab active">Wellness</div>
+                <div class="tab">News</div>
+                <div class="tab">Analytics</div>
+            </div>
+            <div class="big-number">19,365</div>
+            <div class="label">Calories Consumed</div>
+            <div class="progress-bar">
+                <div class="progress-day"><div class="progress-fill" style="height: 40%;"></div></div>
+                <div class="progress-day"><div class="progress-fill" style="height: 60%;"></div></div>
+                <div class="progress-day"><div class="progress-fill" style="height: 80%;"></div></div>
+            </div>
+        </div>
+
+        <div class="card heart-rate-card">
+            <div class="heart-rate-circle">
+                <div class="big-number" style="color: #ff4d4d;">120<span style="font-size: 1rem;">bpm</span></div>
+            </div>
+            <div class="heart-rate-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Heart rate above normal range</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="heartRateChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://www.apptunix.com/blog/wp-content/uploads/sites/3/2020/04/Health-Tracking-apps.jpg" alt="Health Metrics" style="width: 100%; border-radius: 10px;">
+            <div class="label" style="margin-top: 10px;">Track Your Health</div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-pills"></i> Medication Tracker</h2>
+            <div class="medication-tracker">
+                <div class="medication-item">
+                    <div class="medication-icon">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <div class="medication-info">
+                        <div class="medication-name">Lisinopril</div>
+                        <div class="medication-dosage">10mg - Morning & Evening</div>
+                    </div>
+                    <div class="medication-time">8:00 AM</div>
+                </div>
+                <div class="medication-item">
+                    <div class="medication-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="medication-info">
+                        <div class="medication-name">Metformin</div>
+                        <div class="medication-dosage">500mg - With Meals</div>
+                    </div>
+                    <div class="medication-time">1:00 PM</div>
+                </div>
+                <div class="medication-item">
+                    <div class="medication-icon">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <div class="medication-info">
+                        <div class="medication-name">Atorvastatin</div>
+                        <div class="medication-dosage">20mg - Before Bed</div>
+                    </div>
+                    <div class="medication-time">9:00 PM</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card appointment-scheduler">
+            <h2><i class="fas fa-calendar-alt"></i> Upcoming Appointments</h2>
+            <div class="appointment-list">
+                <div class="appointment-item">
+                    <div class="appointment-header">
+                        <strong>Dr. Sarah Johnson</strong>
+                        <span class="appointment-status status-confirmed">Confirmed</span>
+                    </div>
+                    <div style="color: var(--text-light);">Cardiologist</div>
+                    <div style="margin-top: 0.5rem;">
+                        <i class="fas fa-calendar"></i> Feb 15, 2024
+                        <i class="fas fa-clock" style="margin-left: 1rem;"></i> 10:00 AM
+                    </div>
+                </div>
+                <div class="appointment-item">
+                    <div class="appointment-header">
+                        <strong>Dr. Michael Chen</strong>
+                        <span class="appointment-status status-pending">Pending</span>
+                    </div>
+                    <div style="color: var(--text-light);">General Physician</div>
+                    <div style="margin-top: 0.5rem;">
+                        <i class="fas fa-calendar"></i> Feb 20, 2024
+                        <i class="fas fa-clock" style="margin-left: 1rem;"></i> 2:30 PM
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card chat-interface">
+            <h2>Messages</h2>
+            <div class="chat-messages">
+                <div class="chat-message">Doctor: How are you feeling today?</div>
+                <div class="chat-message">Patient: I'm feeling better, thank you!</div>
+            </div>
+            <div class="send-message">
+                <input type="text" placeholder="Type your message here...">
+                <button>Send</button>
+            </div>
+        </div>
+
+        <div class="card bmi-card">
+            <div class="bmi-header">
+                <i class="fas fa-weight fa-lg bmi-icon"></i>
+                <h2>BMI & Health Status</h2>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin: 1rem 0;">
+                <span>Current BMI</span>
+                <span class="big-number" style="margin: 0;">22.5</span>
+            </div>
+            <div style="background: #f5f5f5; height: 8px; border-radius: 4px; margin: 1rem 0;">
+                <div style="width: 45%; background: var(--primary-color); height: 100%; border-radius: 4px;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-light);">
+                <span>Underweight</span>
+                <span>Normal</span>
+                <span>Overweight</span>
+            </div>
+            <div class="bmi-status">
+                <i class="fas fa-check-circle"></i>
+                <span>Normal weight range</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Activity Tracker</h2>
+            <canvas id="activityChart"></canvas>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Healthcare AI Platform. All Rights Reserved.</p>
+</footer>
+
+<script>
+    flatpickr("#calendar", {});
+
+    const heartRateCtx = document.getElementById('heartRateChart').getContext('2d');
+    new Chart(heartRateCtx, {
+        type: 'line',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [{
+                label: 'Heart Rate',
+                data: [75, 82, 95, 105, 112, 118, 120],
+                fill: false,
+                borderColor: '#ff4d4d',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 60,
+                    max: 140
+                }
+            }
+        }
+    });
+
+    const activityCtx = document.getElementById('activityChart').getContext('2d');
+    new Chart(activityCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Steps',
+                data: [8000, 9000, 7500, 12000, 10000, 6000, 11000],
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Steps'
+                    }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
